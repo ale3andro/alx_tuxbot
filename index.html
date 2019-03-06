@@ -1,0 +1,221 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>hello phaser!</title>
+        <script src="js/phaser.min.js"></script>
+    </head>
+    <body>
+
+    <script type="text/javascript">
+
+    window.onload = function() {
+
+        //  Note that this html file is set to pull down Phaser 2.5.0 from the JS Delivr CDN.
+        //  Although it will work fine with this tutorial, it's almost certainly not the most current version.
+        //  Be sure to replace it with an updated version before you start experimenting with adding your own code.
+
+        var game = new Phaser.Game(1000, 700, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+
+        function preload () {
+            game.load.image('backdrop', 'alx_img/1000x700_grid.png')
+            game.load.image('tuxbot', 'alx_img/tuxbot_80.png')
+            
+            game.load.image('arrow_up', 'alx_img/arrow_up.png');
+            game.load.image('arrow_down', 'alx_img/arrow_down.png');
+            game.load.image('arrow_left', 'alx_img/arrow_left.png');
+            game.load.image('arrow_right', 'alx_img/arrow_right.png');
+
+            game.load.image('start', 'alx_img/start.png');
+            game.load.image('go_frwd', 'alx_img/go_forward.png');
+            game.load.image('go_bckwd', 'alx_img/go_back.png');
+            game.load.image('rotate_cw', 'alx_img/rotate_clockwise.png');
+            game.load.image('rotate_ccw', 'alx_img/rotate_counter_clockwise.png');
+            game.load.image('replay', 'alx_img/replay.png');
+
+            game.load.image('brick_h', 'alx_img/brick_wall_horiz_400x5.png');
+            game.load.image('brick_v', 'alx_img/brick_wall_vert_5x400.png');
+            game.load.image('obstacle', 'alx_img/alx_obstacle_70x70.png');
+            game.load.image('fish', 'alx_img/alx_fish.png');
+        }
+
+        function create () {
+            game.physics.startSystem(Phaser.Physics.ARCADE);
+
+            game.add.image(0, 0, 'backdrop');
+            platforms = game.add.group();
+            platforms.enableBody = true;
+            
+            wall0 = platforms.create(496,0, 'brick_v');
+            wall0.scale.setTo(1,2);
+            wall0.anchor.setTo(0,0);
+            wall0.body.immovable=true;
+
+            obstacle = platforms.create(550,550, 'obstacle');
+            obstacle.anchor.setTo(0.5, 0.5);
+            obstacle.body.immovable=true;
+
+            fish = game.add.sprite(550, 50, 'fish');
+            fish.anchor.setTo(0.5 ,0.5);
+            game.physics.arcade.enable(fish); 
+            fish.body.immovable=true;
+           
+            player_x = 550;
+            player_y = 650;
+            player = game.add.sprite(player_x, player_y, 'tuxbot');
+            player.anchor.setTo(0.5, 0.5);
+            game.physics.arcade.enable(player);    
+            
+            arrow_up = game.add.sprite(215,15, 'go_frwd');
+            arrow_down = game.add.sprite(215,115, 'go_bckwd');
+            arrow_rotate_cw = game.add.sprite(315,115, 'rotate_cw');
+            arrow_rotate_ccw = game.add.sprite(115,115, 'rotate_ccw');
+            start = game.add.sprite(215,215, 'start');
+            replay = game.add.sprite(115,215,'replay');
+
+            player.body.collideWorldBounds = true;
+
+            cursors = game.input.keyboard.createCursorKeys();
+            
+            arrow_up.inputEnabled=true;
+            arrow_up.events.onInputDown.add(arrow_up_down, this);
+            arrow_down.inputEnabled=true;
+            arrow_down.events.onInputDown.add(arrow_down_down, this);
+            arrow_rotate_cw.inputEnabled=true;
+            arrow_rotate_cw.events.onInputDown.add(arrow_rotate_cw_down, this);
+            arrow_rotate_ccw.inputEnabled=true;
+            arrow_rotate_ccw.events.onInputDown.add(arrow_rotate_ccw_down, this);
+            start.inputEnabled=true;
+            start.events.onInputDown.add(start_down, this);
+            replay.inputEnabled=true;
+            replay.events.onInputDown.add(replay_down, this);
+
+            arrow_width=50;
+            arrow_height=50;
+            left_image_added=false;
+            right_image_added=false;
+            new_x = 15;
+            new_y = 315;
+            moves = [];
+            moves_index=0;
+            update_interval=0.5;
+            play_next_move=true;
+
+            player.body.onMoveComplete.add(moveOver, this);
+            player.body.friction.x=0;
+        }
+        
+        function replay_down(sprite, pointer) {
+            if (confirm("Ξανά από την αρχή;"))
+                game.state.start(game.state.current);
+        }
+
+        function arrow_up_down(sprite, pointer) {
+            if (new_y<650) {
+                game.add.sprite(new_x, new_y, 'go_frwd');
+                new_x+=100;
+                if (new_x>450) {
+                    new_x=15;
+                    new_y+=100;
+                }
+                moves[moves.length]='up';
+            }
+            else
+                alert('no more moves!');
+        }
+        function arrow_down_down(sprite, pointer) {
+            if (new_y<650) {
+                game.add.sprite(new_x, new_y, 'go_bckwd');
+                new_x+=100;
+                if (new_x>450) {
+                    new_x=15;
+                    new_y+=100;
+                }
+                moves[moves.length]='down';
+            }
+            else
+                alert('no more moves!');
+        }
+        function arrow_rotate_cw_down(sprite, pointer) {
+            if (new_y<650) {
+                game.add.sprite(new_x, new_y, 'rotate_cw');
+                new_x+=100;
+                if (new_x>450) {
+                    new_x=15;
+                    new_y+=100;
+                } 
+                moves[moves.length]='cw';
+            }
+            else
+                alert('no more moves!');
+        }
+        function arrow_rotate_ccw_down(sprite, pointer) {
+            if (new_y<650) {
+                game.add.sprite(new_x, new_y, 'rotate_ccw');
+                new_x+=100;
+                if (new_x>450) {
+                    new_x=15;
+                    new_y+=100;
+                }
+                moves[moves.length]='ccw';
+            }
+            else
+                alert('no more moves!');
+        }
+        function start_down(sprite, pointer) {
+            moves_index=0;
+            move_tuxbot();
+        }
+
+        function moveOver() {
+            player.body.x = Math.floor(player.x/100)*100+10;
+            player.body.y = Math.floor(player.y/100)*100+10;
+            
+            moves_index+=1;
+            if (moves_index==moves.length) {
+                moves_index=0;
+            } else {
+                move_tuxbot();
+            }
+        }
+        function move_tuxbot() {
+            calculate_next_point(moves_index);         
+        }
+
+        function calculate_next_point(i) {
+            if (moves[i]=='up') {
+                player.body.moveTo(500, 100, player.angle-90);
+            }
+            if (moves[i]=='down') {
+                player.body.moveTo(500, 100, player.angle+90);
+            }
+            if (moves[moves_index]=='cw') {
+                    player.angle+=90;
+                    moveOver();
+            }
+            if (moves[moves_index]=='ccw') {
+                    player.angle-=90;
+                    moveOver();
+            }
+        }
+
+        function update() {
+            game.physics.arcade.collide(player, obstacle, collisionHandler);
+            game.physics.arcade.collide(player, platforms);
+            game.physics.arcade.collide(player, fish, endOfGame);
+        }
+
+        function endOfGame(obj1, obj2) {
+            obj2.destroy();
+            console.log('Good job!');
+        }
+
+        function collisionHandler(obj1, obj2) {
+            obj2.body.x=100;
+        }
+    };
+
+    </script>
+
+    </body>
+</html>

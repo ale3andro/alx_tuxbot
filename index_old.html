@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <!--<script src="//cdn.jsdelivr.net/npm/phaser@3.0.0/dist/phaser.min.js"></script>-->
+    <script src="phaser/dist/phaser.min.js"></script>
+</head>
+<body>
+
+    <script>
+    var config = {
+        type: Phaser.AUTO,
+        width: 1000,
+        height: 700,
+        physics: {
+            default: 'arcade',
+            arcade: {
+                gravity: { y: 0 }
+            }
+        },
+        scene: {
+            preload: preload,
+            create: create,
+            update: update
+        }
+    };
+
+    var game = new Phaser.Game(config);
+
+    function preload ()
+    {
+        this.load.image('backdrop', 'alx_img/1000x700_grid.png')
+        this.load.image('tuxbot', 'alx_img/tuxbot_95.png')
+
+        this.load.image('arrow_up', 'alx_img/arrow_up.png');
+        this.load.image('arrow_down', 'alx_img/arrow_down.png');
+        this.load.image('arrow_left', 'alx_img/arrow_left.png');
+        this.load.image('arrow_right', 'alx_img/arrow_right.png');
+    }
+
+    function create ()
+    {
+        this.add.image(500, 350, 'backdrop');
+        //this.add.image(500, 350, 'tuxbot');
+
+        player = this.physics.add.sprite(500, 350, 'tuxbot');
+
+        player.setBounce(0.2);
+        player.setCollideWorldBounds(true);
+        
+        
+        this.input.events.on('POINTER_DOWN_EVENT', player_clicked);
+
+        cursors = this.input.keyboard.createCursorKeys();
+        
+        arrow_width=50;
+        arrow_height=50;
+        left_image_added=false;
+        right_image_added=false;
+        seq_started=false;
+    }
+
+    function player_clicked() {
+        console.log("player clicked!");
+    }
+
+    function getMethods(obj) {
+        var result = [];
+        for (var id in obj) {
+            try {
+                    if (typeof(obj[id]) == "function") {
+                        result.push(id + ": " + obj[id].toString());
+                    }
+                } catch (err) {
+                                result.push(id + ": inaccessible");
+                                }
+        }
+        return result;
+    }
+
+    function update() {
+        
+        if (cursors.left.isDown) {
+            if (!left_image_added) {
+                this.add.image(arrow_width, arrow_height, 'arrow_left');
+                arrow_width+=100;
+                if (arrow_width>config.width) {
+                    arrow_width=50;
+                    arrow_height+=100;
+                }
+                left_image_added=true;
+            }
+        } else 
+            left_image_added=false;
+        
+        if (cursors.right.isDown) {
+            if (!right_image_added) {
+                this.add.image(arrow_width, arrow_height, 'arrow_right');
+                arrow_width+=100;
+                if (arrow_width>config.width) {
+                    arrow_width=50;
+                    arrow_height+=100;
+                }
+                right_image_added=true;
+            }
+        } else 
+            right_image_added=false;
+
+
+        if (cursors.left.isDown) {
+            player.setVelocityX(-160);
+            //alert(getMethods(this.physics).join("\n"));
+            //console.log('ok');
+            //player.setPosition(100,100, 20);
+        }
+        else if (cursors.right.isDown)
+            player.setVelocityX(160);
+        else
+            player.setVelocityX(0);
+        
+        
+        
+        if (cursors.up.isDown){
+            if (!seq_started) {
+                player.y-=100;
+                
+                seq_started=true;
+            }
+        } else {
+            seq_started=false;
+        }
+        
+        if (cursors.down.isDown) {
+            player.y+=100;
+        }
+
+
+        /*
+        if (cursors.up.isDown)
+            player.setVelocityY(-160);
+        else if (cursors.down.isDown)
+            player.setVelocityY(160);
+        else
+            player.setVelocityY(0);
+        */
+    }
+    </script>
+
+</body>
+</html>
