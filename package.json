@@ -1,0 +1,12 @@
+{
+  "name": "alx_tuxbot",
+  "version": "1.0.0",
+  "description": "Tuxbot emulator",
+  "main": "index.html",
+  "repository": "git@github.com:ale3andro/alx_tuxbot.git",
+  "author": "ale3andro <ale3andro@gmail.com>",
+  "license": "GNU",
+  "dependencies": {
+    "phaser": "2.5.0"
+  }
+}
