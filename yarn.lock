@@ -2,7 +2,12 @@
 # yarn lockfile v1
 
 
-phaser@2.5.0:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/phaser/-/phaser-2.5.0.tgz#5773e615f4b0447822d6fcc1f731ba068d4ac196"
-  integrity sha1-V3PmFfSwRHgi1vzB9zG6Bo1KwZY=
+jquery@^3.6.0:
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.6.0.tgz#c72a09f15c1bdce142f49dbf1170bdf8adac2470"
+  integrity sha512-JVzAR/AjBvVt2BmYhxRCSYysDsPcssdmTFnzyLEts9qNwmjmu4JTAMYubEfwVOSwpQ1I1sKKFcxhZCI2buerfw==
+
+konva@^8.3.5:
+  version "8.3.5"
+  resolved "https://registry.yarnpkg.com/konva/-/konva-8.3.5.tgz#017799db93f70ef6437eaa8e7776a4b32648344b"
+  integrity sha512-RjaZN8PwZN3n/AlqLmtPNozLRXd6pPo11UawTJpvuOAKEkSQSXI1EHntDRIPnrrJ/j4gU0VmPzWs7/ZgLZnAPQ==
