@@ -2,8 +2,17 @@
    {
       "stage_img": "alx_img/1000x700_grid.png",
       "stage_width": "1000",
-      "stage_height": "700"
-   },  
+      "stage_height": "700",
+      "note_to_me": "DO NOT FORGET THE OFFSET",
+      "stage_border_x_max": "1000",
+      "stage_border_x_min": "400",
+      "stage_border_y_max": "700",
+      "stage_border_y_min": "0"
+   }, 
+   {
+       "player_start_x": "455",
+       "player_start_y": "55"
+   },
    {
        "class": "obstacle",
        "img": "alx_img/alx_obstacle_70x70.png",

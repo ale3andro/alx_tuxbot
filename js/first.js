@@ -70,7 +70,7 @@ var game_buttons = [
     },
     {
         "class": "button",
-        "img": "alx_img/replay.png",
+        "img": "alx_img/clear.png",
         "img_width" : "70",
         "img_height": "70",
         "x":"15",
@@ -80,16 +80,28 @@ var game_buttons = [
 
 var stage;
 var layer;
+var highlight_rect;
+var highlight_rect_x = 5;
+var highlight_rect_y = 205;
+var tux;
+var player_start_x;
+var player_start_y;
 var stage_items = [];
 var stage_width = 0;
 var stage_height = 0;
+var stage_border_x_max;
+var stage_border_x_min;
+var stage_border_y_max;
+var stage_border_y_min;
 var stage_img = '';
+var play_enabled = true;
 
 var last_arrow_clicked = {};
 var arrows_clicked = [];
-var coord_x = 15;
-var coord_y = 215;
+var coord_x = 10;
+var coord_y = 210;
 var arrows_added = 0;
+var max_arrows = 8;
 
 var arrow_played = 0;
 
@@ -111,7 +123,14 @@ $( document ).ready(function() {
                             stage_width = item.stage_width;
                             stage_height = item.stage_height;
                             stage_img = item.stage_img;
-                        } else 
+                            stage_border_x_max = parseInt(item.stage_border_x_max);
+                            stage_border_x_min = parseInt(item.stage_border_x_min);
+                            stage_border_y_max = parseInt(item.stage_border_y_max);
+                            stage_border_y_min = parseInt(item.stage_border_y_min);
+                        } else if ("player_start_x" in item) {
+                            player_start_x = parseInt(item.player_start_x);
+                            player_start_y = parseInt(item.player_start_y);
+                        } else
                             stage_items.push(item);
                     });
                     $.each(game_buttons, function(i, item) {
@@ -150,8 +169,10 @@ $( document ).ready(function() {
                     var player = new Image();
                     player.onload = function () {
                         var token = new Konva.Image({
-                            x: 415+40,
-                            y: 15+40,
+                            //x: 415+40,
+                            x: player_start_x,
+                            //y: 415+40,
+                            y: player_start_y,
                             image: player,
                             width: 80,
                             height: 80,
@@ -199,34 +220,45 @@ $( document ).ready(function() {
                             last_arrow_clicked = target.getAttr('image').src;
                             var arrow_filename = last_arrow_clicked.split('/')[last_arrow_clicked.split('/').length-1].slice(0, -4);
                             if (arrow_filename.indexOf('start')>=0) {
-                                console.log(arrows_clicked);
-                                movePlayer();
-                            } else if (arrow_filename.indexOf('replay')>=0) {
-                                console.log('replay button');
+                                if (play_enabled) {
+                                    arrow_played = 0;
+                                    var tux = stage.find('#token')[0];
+                                    tux.x(player_start_x);
+                                    tux.y(player_start_y);
+                                    tux.rotation(0);
+                                    play_enabled=false;
+                                    movePlayer();
+                                } else 
+                                    console.log('play button is not enabled');
+                            } else if (arrow_filename.indexOf('clear')>=0) {
+                                location.reload();
                             } else {
-                                arrows_clicked.push(arrow_filename);
-                                var arrow = new Image();
-                                arrow.onload = function () { 
-                                    updateArrowCoordinates(++arrows_added);
-                                    var arrowObj = new Konva.Image({
-                                        x: coord_x,
-                                        y: coord_y,
-                                        image: arrow,
-                                        width: 80,
-                                        height: 80,
-                                    });
-                                    layer.add(arrowObj);
-                                };
-                                arrow.src = last_arrow_clicked.replace(arrow_filename, arrow_filename + "_colored");
+                                if (arrows_added>=max_arrows){
+                                    console.log('No more arrows please');
+                                } else {
+                                    arrows_clicked.push(arrow_filename);
+                                    var arrow = new Image();
+                                    arrow.onload = function () { 
+                                        updateArrowCoordinates(++arrows_added);
+                                        var arrowObj = new Konva.Image({
+                                            x: coord_x,
+                                            y: coord_y,
+                                            image: arrow,
+                                            width: 80,
+                                            height: 80,
+                                        });
+                                        layer.add(arrowObj);
+                                    };
+                                    arrow.src = last_arrow_clicked.replace(arrow_filename, arrow_filename + "_colored");
+                                }
                             }
                         }
                     });
-                    
                     var container = stage.container();
                     container.tabIndex = 1;
                     container.focus();
                     const DELTA = 100;
-
+                    /*
                     container.addEventListener('keydown', function (e) {
                         var tux = stage.find('#token')[0];
                         var walls = stage.find('.obstacle');
@@ -269,7 +301,7 @@ $( document ).ready(function() {
                             console.log('Winner!');
                         e.preventDefault();
                     });
-
+                    */
                     function haveIntersection(tux, obstacles) {
                         for (var q=0; q<obstacles.length; q++) {
                             var check = doTheyIntersect(tux, obstacles[q])
@@ -287,40 +319,54 @@ $( document ).ready(function() {
                         );
                     }
                     function updateArrowCoordinates(arrowsAdded) {
-                        if (arrowsAdded>4) {
-                            console.log('No more than 4 arrows allowed');
-                        }
                         if (arrowsAdded>1) {
                             coord_x = coord_x + 100;
                             if (coord_x>400) {
-                                coord_x = 15;
+                                coord_x = 10;
                                 coord_y = coord_y + 100;
                             }
                         }
                     }
 
                     function movePlayer() {
+                        if (arrows_clicked.length==0) {
+                            play_enabled=true;
+                            return;
+                        }
                         var tux = stage.find('#token')[0];
+                        if (highlight_rect==undefined) {
+                            highlight_rect = new Konva.Rect({
+                                x: highlight_rect_x,
+                                y: highlight_rect_y,
+                                width: 90,
+                                height: 90,
+                                stroke: 'red',
+                                strokeWidth: 2,
+                                shadowBlur: 5,
+                                cornerRadius: 10,
+                              });
+                              // add the shape to the layer
+                            layer.add(highlight_rect);
+                        }
+                        if (arrow_played==0) {
+                            coord_y = 210;
+                            highlight_rect.x(highlight_rect_x);
+                            highlight_rect.y(highlight_rect_y);
+                        } else if (arrow_played<arrows_clicked.length) {
+                            var new_x = highlight_rect.x() + 100;
+                            var new_y = highlight_rect.y();
+                            if (new_x>400) {
+                                new_x = 5;
+                                new_y = highlight_rect.y() + 100;
+                            }
+                            highlight_rect.x(new_x);
+                            highlight_rect.y(new_y);
+                        }
                         if (arrow_played==arrows_clicked.length)
                         {
                             console.log('End of the attempt');
+                            play_enabled=true;
                         } else  {
-                            if (arrows_clicked[arrow_played]=='go_forward') {
-                                // move a node to the right at 100 pixels/second
-                                var velocity = 100;
-                                var init_x = tux.x();
-                                var end_x = init_x + 100;
-                                var anim = new Konva.Animation(function(frame) {
-                                    var dist = velocity * (frame.timeDiff / 1000);
-                                    tux.move({x: dist, y: 0});
-                                    if (tux.x()-init_x >100) {
-                                        stopAnimation(this);
-                                        tux.x(end_x);
-                                    }
-                                }, layer);
-
-                                anim.start();
-                            }
                             if (arrows_clicked[arrow_played]=='rotate_clockwise') {
                                 var angularSpeed = 90;
                                 var init_angle = tux.rotation();
@@ -334,8 +380,7 @@ $( document ).ready(function() {
                                     
                                   }, layer);
                                   anim.start();
-                            }
-                            if (arrows_clicked[arrow_played]=='rotate_counter_clockwise') {
+                            } else if (arrows_clicked[arrow_played]=='rotate_counter_clockwise') {
                                 var angularSpeed = 90;
                                 var init_angle = tux.rotation();
                                 var anim = new Konva.Animation(function (frame) {
@@ -348,9 +393,36 @@ $( document ).ready(function() {
                                     
                                   }, layer);
                                   anim.start();
+                            } else {
+                                // move a node to the right at 100 pixels/second
+                                var velocity = 100;
+                                var init_x = tux.x();
+                                var init_y = tux.y();
+                                // Mutliplicators for the forward and the backward move of tux
+                                // if moving backword is the default and with the following if
+                                // the values are changed as needed
+                                var multiplicator_x = -1;
+                                var multiplicator_y = 1;
+                                if (arrows_clicked[arrow_played]=='go_forward') {
+                                    multiplicator_x = 1;
+                                    multiplicator_y = -1;
+                                }
+                                var end_x = init_x + 100 * Math.sin(tux.rotation() * Math.PI / 180) * multiplicator_x;
+                                var end_y = init_y + 100 * Math.cos(tux.rotation() * Math.PI / 180) * multiplicator_y;
+                                var anim = new Konva.Animation(function(frame) {
+                                    var dist_x = velocity * (frame.timeDiff / 1000) * Math.sin(tux.rotation() * Math.PI / 180) * multiplicator_x;
+                                    var dist_y = velocity * (frame.timeDiff / 1000) * Math.cos(tux.rotation() * Math.PI / 180) * multiplicator_y;
+                                    tux.move({x: dist_x, y: dist_y});
+                                    if ( (Math.abs(tux.x()-init_x) >100) || (Math.abs(tux.y()-init_y)>100) ) {
+                                        stopAnimation(this);
+                                        tux.x(end_x);
+                                        tux.y(end_y);
+                                    }
+                                }, layer);
+
+                                anim.start();
                             }
                             arrow_played++;
-                            
                         }
                     }
                     function stopAnimation(animation) {
@@ -358,11 +430,35 @@ $( document ).ready(function() {
                         var tux = stage.find('#token')[0];
                         var walls = stage.find('.obstacle');
                         var prize = stage.find('.prize')[0];
-                        if (haveIntersection(tux, walls)) 
-                            console.log('Game over');
-                        else if (doTheyIntersect(tux, prize))
+                        if (haveIntersection(tux, walls)) {
+                            $('#alx_msg').html('Πάνω σε εμπόδιο...<br /><img onclick="location.reload();" src="alx_img/run_again.png">');
+                             $('#alx_msg').show();
+                             animateCSS('#alx_msg', 'bounce').then((message) => {
+                                // Do something after the animation ends                                /*
+                                /*
+                                setTimeout(function() {
+                                    $('#alx_msg').hide();
+                                }, 5000);
+                                */
+                              });
+                        }
+                        else if (doTheyIntersect(tux, prize)) {
                             console.log('Winner!');
-                        else {
+                            console.log('out of bounds');
+                             $('#alx_msg').html('Μπράβο!!<br /><img onclick="location.reload();" src="alx_img/run_again.png">');
+                             $('#alx_msg').show();
+                             animateCSS('#alx_msg', 'bounce').then((message) => {
+                                // Do something after the animation ends
+                              });
+                        }
+                        else if ( (tux.x()>stage_border_x_max) || (tux.x()<stage_border_x_min) || (tux.y()>stage_border_y_max) || (tux.y()<stage_border_y_min) ) {
+                             console.log('out of bounds');
+                             $('#alx_msg').html('Εκτός πίστας...<br /><img onclick="location.reload();" src="alx_img/run_again.png">');
+                             $('#alx_msg').show();
+                             animateCSS('#alx_msg', 'bounce').then((message) => {
+                                // Do something after the animation ends
+                              });
+                        } else {
                             setTimeout(function() {
                                 movePlayer();
                             }, 500)
@@ -378,4 +474,22 @@ $( document ).ready(function() {
     } else {
       $('#alx_msg').html('Πρέπει να οριστεί το id του quest');
     }
+});
+
+const animateCSS = (element, animation, prefix = 'animate__') =>
+    // We create a Promise and return it
+    new Promise((resolve, reject) => {
+    const animationName = `${prefix}${animation}`;
+    const node = document.querySelector(element);
+
+    node.classList.add(`${prefix}animated`, animationName);
+
+    // When the animation ends, we clean the classes and resolve the Promise
+    function handleAnimationEnd(event) {
+        event.stopPropagation();
+        node.classList.remove(`${prefix}animated`, animationName);
+        resolve('Animation ended');
+    }
+
+    node.addEventListener('animationend', handleAnimationEnd, {once: true});
 });

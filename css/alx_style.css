@@ -1,0 +1,17 @@
+@font-face {
+    font-family: 'thraniaGreekFont';
+    src: URL('../font/ThraniaGreekFontFree1.ttf') format('truetype');
+  }
+
+#alx_msg {
+    font-family: 'thraniaGreekFont';
+    position: absolute;
+    font-size: 100px;
+    text-align: center;
+    top: 100px;
+    left: 40px;
+    z-index: 1;
+    display: none;
+    background-color: yellowgreen;
+    opacity: 0.8;
+}
