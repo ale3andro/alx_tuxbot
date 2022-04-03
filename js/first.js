@@ -75,6 +75,14 @@ var game_buttons = [
         "img_height": "70",
         "x":"15",
         "y": "15"
+    },
+    {
+        "class": "button",
+        "img": "alx_img/clear_one_80.png",
+        "img_width" : "70",
+        "img_height": "70",
+        "x":"315",
+        "y": "15"
     }
 ];
 
@@ -101,7 +109,7 @@ var arrows_clicked = [];
 var coord_x = 10;
 var coord_y = 210;
 var arrows_added = 0;
-var max_arrows = 8;
+var max_arrows = 16;
 
 var arrow_played = 0;
 
@@ -349,7 +357,7 @@ $( document ).ready(function() {
                             layer.add(highlight_rect);
                         }
                         if (arrow_played==0) {
-                            coord_y = 210;
+                            //coord_y = 210; // This is a bug
                             highlight_rect.x(highlight_rect_x);
                             highlight_rect.y(highlight_rect_y);
                         } else if (arrow_played<arrows_clicked.length) {
