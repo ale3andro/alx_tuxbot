@@ -11,8 +11,17 @@
    }, 
    {
        "player_start_x": "455",
-       "player_start_y": "55"
+       "player_start_y": "55",
+       "player_img_url": "alx_img/tuxbot_80.png"
    },
+   {
+        "class": "prize",
+        "img": "alx_img/alx_fish.png",
+        "img_width" : "70",
+        "img_height": "70",
+        "x":"615",
+        "y": "315"
+    },
    {
        "class": "obstacle",
        "img": "alx_img/alx_obstacle_70x70.png",

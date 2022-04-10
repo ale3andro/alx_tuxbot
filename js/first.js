@@ -20,14 +20,6 @@ function getUrlParams( prop ) {
 }
 
 var game_buttons = [
-    {
-         "class": "prize",
-         "img": "alx_img/alx_fish.png",
-         "img_width" : "70",
-         "img_height": "70",
-         "x":"615",
-         "y": "315"
-     },
      {
         "class": "button",
         "img": "alx_img/go_forward.png",
@@ -94,6 +86,7 @@ var highlight_rect_y = 205;
 var tux;
 var player_start_x;
 var player_start_y;
+var player_img_url;
 var stage_items = [];
 var stage_width = 0;
 var stage_height = 0;
@@ -138,6 +131,7 @@ $( document ).ready(function() {
                         } else if ("player_start_x" in item) {
                             player_start_x = parseInt(item.player_start_x);
                             player_start_y = parseInt(item.player_start_y);
+                            player_img_url = item.player_img_url;
                         } else
                             stage_items.push(item);
                     });
@@ -192,7 +186,8 @@ $( document ).ready(function() {
                         });
                         layer.add(token);
                     };
-                    player.src = 'alx_img/tuxbot_80.png';
+                    //player.src = 'alx_img/tuxbot_80.png';
+                    player.src = player_img_url;
 
                     var walls = {};
                     var loaded_images = 0;
