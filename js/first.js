@@ -101,6 +101,8 @@ var last_arrow_clicked = {};
 var arrows_clicked = [];
 var coord_x = 10;
 var coord_y = 210;
+var start_coord_x = 10;
+var start_coord_y = 210;
 var arrows_added = 0;
 var max_arrows = 16;
 
@@ -234,7 +236,23 @@ $( document ).ready(function() {
                                 } else 
                                     console.log('play button is not enabled');
                             } else if (arrow_filename.indexOf('clear')>=0) {
-                                location.reload();
+                                if (arrow_filename.indexOf('one')>=0) {
+                                    if (play_enabled) {
+                                        console.log('Delete the last arrow, if any');
+                                        if (arrows_clicked.length>0){
+                                            // Find the image
+                                            node = stage.find('.gameArrow' + arrows_clicked.length);
+                                            // Delete it
+                                            node[0].destroy();
+                                            // Remove it from the array of arrows
+                                            arrows_clicked.pop();
+                                            // Decrease the corresponding counter
+                                            --arrows_added;
+                                        }
+                                    } else 
+                                        console.log('delete one button is not enabled');
+                                } else 
+                                    location.reload();
                             } else {
                                 if (arrows_added>=max_arrows){
                                     console.log('No more arrows please');
@@ -249,6 +267,7 @@ $( document ).ready(function() {
                                             image: arrow,
                                             width: 80,
                                             height: 80,
+                                            name: 'gameArrow' + arrows_clicked.length,
                                         });
                                         layer.add(arrowObj);
                                     };
@@ -322,13 +341,11 @@ $( document ).ready(function() {
                         );
                     }
                     function updateArrowCoordinates(arrowsAdded) {
-                        if (arrowsAdded>1) {
-                            coord_x = coord_x + 100;
-                            if (coord_x>400) {
-                                coord_x = 10;
-                                coord_y = coord_y + 100;
-                            }
-                        }
+                        Row = Math.floor((arrowsAdded-1)/4);
+                        Col = arrowsAdded-4*Row-1;
+                        console.log('Row: ', Row, ' Col: ', Col);
+                        coord_x = start_coord_x + Col*100;
+                        coord_y = start_coord_y + Row*100;
                     }
 
                     function movePlayer() {
