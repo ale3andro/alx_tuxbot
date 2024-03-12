@@ -164,12 +164,12 @@ $( document ).ready(function() {
         
                         // add the shape to the layer
                         layer.add(map);
-                        layer.batchDraw();
+                        //layer.batchDraw();
                     };
                     
                     imageObj.src = stage_img;
                     stage.add(layer);
-
+                    
                     var player = new Image();
                     player.onload = function () {
                         var token = new Konva.Image({
@@ -187,14 +187,15 @@ $( document ).ready(function() {
                               },
                         });
                         layer.add(token);
+                        console.log('token added to Konva layer');
                     };
-                    //player.src = 'alx_img/tuxbot_80.png';
                     player.src = player_img_url;
-
+                    
                     var walls = {};
                     var loaded_images = 0;
 
                     for (var q=0; q<stage_items.length; q++) {
+                        console.log('one');
                         walls[q] = new Image();
                         walls[q].x = stage_items[q].x;
                         walls[q].onload = function () {
@@ -209,6 +210,7 @@ $( document ).ready(function() {
                                         name: stage_items[u].class,
                                     });
                                     layer.add(wall_ci);
+                                    console.log('stage item added to Konva layer');
                                }
                             }
                         };
@@ -217,7 +219,7 @@ $( document ).ready(function() {
 
                     stage.add(layer);
                     layer.draw();
-                    
+
                     // Click function
                     layer.on('click', function(e) {
                         var target = e.target;
@@ -451,7 +453,11 @@ $( document ).ready(function() {
                         var walls = stage.find('.obstacle');
                         var prize = stage.find('.prize')[0];
                         if (haveIntersection(tux, walls)) {
-                            $('#alx_msg').html('Πάνω σε εμπόδιο...<br /><img onclick="location.reload();" src="alx_img/run_again.png">');
+                            $('#alx_msg').html('Πάνω σε εμπόδιο...<br /><img onclick="location.reload();" src="alx_img/run_again.png"><img id="alx_close" src="alx_img/close.png">')
+                            $('#alx_close').on( "click", function() {
+                                $('#alx_msg').hide();
+                                play_enabled=true;
+                              } );
                              $('#alx_msg').show();
                              animateCSS('#alx_msg', 'bounce').then((message) => {
                                 // Do something after the animation ends                                /*
@@ -473,7 +479,12 @@ $( document ).ready(function() {
                         }
                         else if ( (tux.x()>stage_border_x_max) || (tux.x()<stage_border_x_min) || (tux.y()>stage_border_y_max) || (tux.y()<stage_border_y_min) ) {
                              console.log('out of bounds');
-                             $('#alx_msg').html('Εκτός πίστας...<br /><img onclick="location.reload();" src="alx_img/run_again.png">');
+                             $('#alx_msg').html('Εκτός πίστας...<br /><img onclick="location.reload();" src="alx_img/run_again.png"><img id="alx_close" src="alx_img/close.png">');
+                             $('#alx_close').on( "click", function() {
+                                $('#alx_msg').hide();
+                                play_enabled=true;
+                              } );
+                              
                              $('#alx_msg').show();
                              animateCSS('#alx_msg', 'bounce').then((message) => {
                                 // Do something after the animation ends

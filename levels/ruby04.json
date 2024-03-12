@@ -16,11 +16,11 @@
    },
    {
         "class": "prize",
-        "img": "alx_img/ruby_friend_penguin_80.png",
+        "img": "alx_img/ruby_friend_robot_80.png",
         "img_width" : "70",
         "img_height": "70",
-        "x":"615",
-        "y": "315"
+        "x":"815",
+        "y": "515"
     },
    {
        "class": "obstacle",
@@ -69,5 +69,29 @@
         "img_height": "70",
         "x":"515",
         "y":"615"
+    },
+    {
+        "class": "obstacle",
+        "img": "alx_img/alx_obstacle_70x70.png",
+        "img_width" : "70",
+        "img_height": "70",
+        "x":"815",
+        "y":"415"
+    },
+    {
+        "class": "obstacle",
+        "img": "alx_img/alx_obstacle_70x70.png",
+        "img_width" : "70",
+        "img_height": "70",
+        "x":"715",
+        "y":"415"
+    },
+    {
+        "class": "obstacle",
+        "img": "alx_img/alx_obstacle_70x70.png",
+        "img_width" : "70",
+        "img_height": "70",
+        "x":"715",
+        "y":"515"
     }  
  ]
