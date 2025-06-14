@@ -109,14 +109,32 @@ var max_arrows = 16;
 var arrow_played = 0;
 
 $( document ).ready(function() {
-    if ('id' in getUrlParams()) {
-        var questId = getUrlParams('id');
-        if ( (questId==undefined) || (questId=='') ) {
-            console.log('Undefined or empty string');
-            
-        } else {
-            $.ajax({
-                url: 'levels/' + questId + '.json',
+    if (!('id' in getUrlParams())) {
+        $.ajax(
+        {   url: "levels/all_activities",
+            type: "GET",
+            dataType: "text",
+            success: function(result) {
+                $('#container').html('<h1>Διαθέσιμες δραστηριότητες<h1><br/>');
+                console.log(result);
+                var alldata = result.split('\n');
+                for (var i=0; i<alldata.length; i+=2) {
+                    activity_id = alldata[i].split(".")[0];
+                    if (alldata[i]!='') {
+                        activity_title = alldata[i+1].substring(1, alldata[i+1].length-1);
+                        let url = activity_title + ' | <a href="?id=' + activity_id + '">εδώ</a>.<br />';
+                        $('#container').html( $('#container').html() + url);
+                        console.log(url);
+                    }
+                }
+            },
+            error: function(xhr, status, error) {
+                console.log('Δεν βρέθηκε το αρχείο all_activities');
+            } 
+        });
+    } else {
+        $.ajax({
+                url: 'levels/' + getUrlParams('id') + '.json',
                 contentType: "application/json",
                 dataType: "json",
                 success: function(result){
@@ -282,50 +300,7 @@ $( document ).ready(function() {
                     container.tabIndex = 1;
                     container.focus();
                     const DELTA = 100;
-                    /*
-                    container.addEventListener('keydown', function (e) {
-                        var tux = stage.find('#token')[0];
-                        var walls = stage.find('.obstacle');
-                        var prize = stage.find('.prize')[0];
-                        if (e.keyCode === 37) {
-                            if ( (tux.x() - DELTA)<0 ) 
-                                alert('out of bounds');
-                            else {
-                                tux.x(tux.x() - DELTA);
-                            }
-                        } else if (e.keyCode === 38) {
-                            if ( (tux.y() - DELTA) < 0 ) 
-                                alert('out of bounds');
-                            else {
-                                tux.y(tux.y() - DELTA);
-                            }
-                        } else if (e.keyCode === 39) {
-                            if ( (tux.x()+DELTA)> stage_width ) 
-                                alert('out of bounds');
-                            else {
-                                tux.x(tux.x() + DELTA);
-                            }
-                        } else if (e.keyCode === 40) {
-                            if ( (tux.y() + DELTA) > stage_height ) 
-                                alert('out of bounds');
-                            else {
-                                tux.y(tux.y() + DELTA);
-                            }
-                        } else if (e.keyCode === 65) {
-                            console.log('Tux x:', tux.x(), 'and y:', tux.y(), " width:", tux.width(), " height:", tux.height(), " rotation: ", tux.rotation());
-                            for (var q=0; q<walls.length; q++) {
-                                console.log('Wall:', q, ' x:', walls[q].x(), 'and y:', walls[q].y(), " width:", walls[q].width(), " height:", walls[q].height());
-                            }
-                        } else {
-                            return;
-                        }
-                        if (haveIntersection(tux, walls)) 
-                            console.log('Game over');
-                        if (doTheyIntersect(tux, prize))
-                            console.log('Winner!');
-                        e.preventDefault();
-                    });
-                    */
+                    
                     function haveIntersection(tux, obstacles) {
                         for (var q=0; q<obstacles.length; q++) {
                             var check = doTheyIntersect(tux, obstacles[q])
@@ -497,14 +472,12 @@ $( document ).ready(function() {
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
-                    console.log('Error parsing quest!');
+                    window.location.href = 'http://sxoleio.pw/alx_code/alx_tuxbot/';
                 }
             });
-        }
-    // if id is not in the argument list
-    } else {
-      $('#alx_msg').html('Πρέπει να οριστεί το id του quest');
     }
+    
+    return;
 });
 
 const animateCSS = (element, animation, prefix = 'animate__') =>

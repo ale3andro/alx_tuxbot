@@ -7,7 +7,8 @@
       "stage_border_x_max": "1000",
       "stage_border_x_min": "400",
       "stage_border_y_max": "700",
-      "stage_border_y_min": "0"
+      "stage_border_y_min": "0",
+      "description" : "Ρούμπυ - Πιγκουίνος"
    }, 
    {
        "player_start_x": "455",
