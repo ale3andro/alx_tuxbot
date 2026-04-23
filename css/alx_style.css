@@ -3,6 +3,10 @@
     src: URL('../font/ThraniaGreekFontFree1.ttf') format('truetype');
   }
 
+body {
+  zoom: 0.9;
+}
+
 #alx_msg {
     font-family: 'thraniaGreekFont';
     position: absolute;
