@@ -188,6 +188,7 @@ $( document ).ready(function() {
                     stage_border_x_min = parseInt(item.stage_border_x_min);
                     stage_border_y_max = parseInt(item.stage_border_y_max);
                     stage_border_y_min = parseInt(item.stage_border_y_min);
+                    next_level         = item.next_level;
                 } else if ("player_start_x" in item) {
                     player_start_x = parseInt(item.player_start_x);
                     player_start_y = parseInt(item.player_start_y);
@@ -416,7 +417,15 @@ $( document ).ready(function() {
                     if (haveIntersection(tux, walls)) {
                         showMessage('Πάνω σε εμπόδιο...<br /><img onclick="location.reload();" src="alx_img/run_again.png"><img id="alx_close" src="alx_img/close.png">', true);
                     } else if (doTheyIntersect(tux, prize)) {
-                        showMessage('Μπράβο!!<br /><img onclick="location.reload();" src="alx_img/run_again.png">', false);
+                        if ('showNextLevel' in getUrlParams()) {
+                            if (next_level!='null')
+                                showMessage('Μπράβο!!<br /><img onclick="location.reload();" src="alx_img/run_again.png"><img onclick="window.location.href=\'' + window.location.origin + window.location.pathname + '?id=' + next_level + '&showNextLevel' + '\';" src="alx_img/next_level.png">', false);
+                            else 
+                                showMessage('Μπράβο!!<br /><img onclick="location.reload();" src="alx_img/run_again.png">', false);
+                        }
+                        else
+                            showMessage('Μπράβο!!<br /><img onclick="location.reload();" src="alx_img/run_again.png">', false);
+                            
                     } else if (
                         tux.x() > stage_border_x_max || tux.x() < stage_border_x_min ||
                         tux.y() > stage_border_y_max || tux.y() < stage_border_y_min
