@@ -160,7 +160,7 @@ $( document ).ready(function() {
                     var activity_id = alldata[i].split(".")[0];
                     if (alldata[i] !== '') {
                         var activity_title = alldata[i+1].substring(1, alldata[i+1].length - 1);
-                        var url = activity_title + ' | <a href="?id=' + activity_id + '">εδώ</a>.<br />';
+                        var url = activity_title + ' | <a href="?id=' + activity_id + '">εδώ</a> | <a href="?id=' + activity_id + '&showNextLevel">εδώ με showNextLevel (if any)</a> <br />';
                         $('#container').html( $('#container').html() + url );
                     }
                 }
